@@ -58,8 +58,8 @@ reportRouter.delete('/stats', async (req: Request, res: Response) => {
   try {
     const adminKey = req.headers['x-admin-key'];
 
-    // 硬编码密钥
-    if (adminKey !== 'super-secret-admin-key-123') {
+    const expectedKey = process.env.REPORT_ADMIN_KEY;
+    if (!expectedKey || adminKey !== expectedKey) {
       return res.status(403).json({ error: 'Forbidden' });
     }
 

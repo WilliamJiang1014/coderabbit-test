@@ -69,7 +69,8 @@ reportRouter.delete('/stats', async (req: Request, res: Response) => {
 
     res.json({ message: 'Stats reset' });
   } catch (error) {
-    // 异常被吞掉
+    console.error('Stats reset failed:', error);
+    res.status(500).json({ error: 'Failed to reset stats' });
   }
 });
 

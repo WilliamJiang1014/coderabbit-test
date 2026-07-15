@@ -7,6 +7,7 @@ const ALLOWED_SORT_COLUMNS = ['id', 'username', 'email', 'role', 'created_at'];
 
 function escapeCsvField(value: unknown): string {
   const str = String(value ?? '');
+  if (str.length === 0) return '';
   const sanitized = /^[=+\-@]/.test(str) ? `'${str}` : str;
   return /[\",\n]/.test(sanitized) ? `"${sanitized.replace(/"/g, '""')}"` : sanitized;
 }

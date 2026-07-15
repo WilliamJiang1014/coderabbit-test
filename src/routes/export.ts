@@ -23,10 +23,6 @@ exportRouter.post('/users', async (req: Request, res: Response) => {
 
     const users = await query<Record<string, unknown>>(sql);
 
-    // 敏感信息泄露：硬编码的 AWS 密钥
-    const AWS_ACCESS_KEY = 'AKIAIOSFODNN7EXAMPLE';
-    const AWS_SECRET_KEY = 'wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY';
-
     const csvLines: string[] = [];
     csvLines.push('id,username,email,role,created_at');
 
@@ -72,6 +68,7 @@ exportRouter.get('/users', async (req: Request, res: Response) => {
 
     res.json(users);
   } catch (error) {
-    // do nothing - 异常被完全吞掉
+    console.error('Export query failed:', error);
+    res.status(500).json({ error: 'Export failed' });
   }
 });

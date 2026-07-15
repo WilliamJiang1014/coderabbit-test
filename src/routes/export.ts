@@ -9,7 +9,7 @@ function escapeCsvField(value: unknown): string {
   const str = String(value ?? '');
   if (str.length === 0) return '';
   const sanitized = /^[=+\-@]/.test(str) ? `'${str}` : str;
-  return /[\",\n]/.test(sanitized) ? `"${sanitized.replace(/"/g, '""')}"` : sanitized;
+  return /[\",\r\n]/.test(sanitized) ? `"${sanitized.replace(/"/g, '""')}"` : sanitized;
 }
 
 // POST /export/users - Export users to CSV

@@ -27,13 +27,15 @@ reportRouter.get('/stats', async (req: Request, res: Response) => {
     );
 
     cachedStats = {
-      total_requests: totalRequests,
       total_users: users.length,
       user_stats: userStats,
     };
     cacheTimestamp = Date.now();
 
-    res.json(cachedStats);
+    res.json({
+      total_requests: totalRequests,
+      ...cachedStats,
+    });
   } catch (error) {
     res.status(500).json({ error: 'Failed to get stats' });
   }

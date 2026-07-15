@@ -20,25 +20,11 @@ reportRouter.get('/stats', async (req: Request, res: Response) => {
       return res.json(cachedStats);
     }
 
-    const users = await query<{ id: number }>('SELECT id FROM users');
-    const userStats = [];
-
-    // N+1 查询：对每个用户独立查询
-    for (const user of users) {
-      const orders = await query(
-        'SELECT COUNT(*) as cnt FROM orders WHERE user_id = ?',
-        [user.id]
-      );
-      const revenue = await query(
-        'SELECT SUM(amount) as total FROM orders WHERE user_id = ?',
-        [user.id]
-      );
-      userStats.push({
-        user_id: user.id,
-        order_count: (orders[0] as any)?.cnt || 0,
-        total_revenue: (revenue[0] as any)?.total || 0,
-      });
-    }
+    // Use a single grouped query instead of N+1
+    const userStats = await query<{ user_id: number; order_count: number; total_revenue: number }>(
+      `SELECT u.id AS user_id, COUNT(o.id) AS order_count, COALESCE(SUM(o.amount), 0) AS total_revenue
+       FROM users u LEFT JOIN orders o ON o.user_id = u.id GROUP BY u.id`
+    );
 
     cachedStats = {
       total_requests: totalRequests,

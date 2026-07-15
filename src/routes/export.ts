@@ -56,7 +56,8 @@ exportRouter.post('/users', async (req: Request, res: Response) => {
 exportRouter.get('/users', async (req: Request, res: Response) => {
   try {
     const sortField = req.query.sortField as string;
-    const order = (req.query.order as string)?.toUpperCase() === 'DESC' ? 'DESC' : 'ASC';
+    const orderParam = typeof req.query.order === 'string' ? req.query.order : '';
+    const order = orderParam.toUpperCase() === 'DESC' ? 'DESC' : 'ASC';
 
     let sql = 'SELECT id, username, email, role FROM users';
 

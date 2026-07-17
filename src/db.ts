@@ -16,7 +16,27 @@ export function getPool(): Pool {
   return pool;
 }
 
-export async function query<T>(sql: string, params?: unknown[]): Promise<T[]> {
+/** Required options for every database query. */
+export interface QueryOptions {
+  /** Caller-provided timeout in milliseconds. */
+  timeoutMs: number;
+  /** Logical name of the caller for tracing. */
+  caller: string;
+}
+
+/**
+ * Execute a parameterized SQL query.
+ * Breaking change: `options` is now required (was previously optional/absent).
+ */
+export async function query<T>(
+  sql: string,
+  params: unknown[] | undefined,
+  options: QueryOptions
+): Promise<T[]> {
+  if (!options || typeof options.timeoutMs !== 'number' || !options.caller) {
+    throw new Error('query() requires options: { timeoutMs, caller }');
+  }
+
   const conn = await getPool().getConnection();
   try {
     const [rows] = await conn.execute(sql, params);
